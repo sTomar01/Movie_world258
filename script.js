@@ -1,141 +1,136 @@
-const API_KEY = 'api_key=1cf50e6248dc270629e802686245c2c8';
-const BASE_URL = 'https://api.themoviedb.org/3';
-const API_URL = BASE_URL + '/discover/movie?sort_by=popularity.desc&'+API_KEY;
-const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+const API_KEY = "api_key=1cf50e6248dc270629e802686245c2c8";
+const BASE_URL = "https://api.themoviedb.org/3";
+const API_URL = BASE_URL + "/discover/movie?sort_by=popularity.desc&" + API_KEY;
+const IMG_URL = "https://image.tmdb.org/t/p/w500";
 
-const main = document.getElementById('main');
+const main = document.getElementById("main");
 
 var moviesData = "";
 
-//const carouselcaption=document.getElementById('carouselcaption')
-
-getMovies(API_URL)
-async function getMovies(API_URL){
-    const res=await fetch (API_URL)
-    const data=await res.json()
-    displayMovies(data.results);
-    displayMoviesCa(data.results);
-    moviesData = data.results;
+getMovies(API_URL);
+async function getMovies(API_URL) {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+  displayMovies(data.results);
+  displayMoviesCa(data.results);
+  moviesData = data.results;
 }
-/** 
-async function getMovie(API_URL){
-    const res=await fetch (API_URL)
-    const data=await res.json()
-    displayMovies(data.results);
-    displayMoviesCa(data.results);
-    moviesData = data.results;
-    
 
+function showMovie(movieId) {
+  console.log(moviesData[JSON.stringify(movieId)]);
+  sessionStorage.setItem("movie", JSON.stringify(moviesData[movieId]));
+  location.href = "movie.html";
 }
-**/
 
-function showMovie(movieId)
-{
-    console.log(moviesData[JSON.stringify(movieId)])
-    sessionStorage.setItem("movie",JSON.stringify(moviesData[movieId]));
-    location.href="movie.html";
-    
-    // console.log(movieId);
-    
-    //const movie=getMovie(BASE_URL + "/movie/"+id+"?"+API_KEY);
-    //console.log(movie)
-    
-;}
-function displayMoviesCa(movies){
-    
-    
-    const {backdrop_path,release_date,title,vote_average,original_language,id}=movies[0];
-    // sessionStorage.setItem("movie",JSON.stringify(movies[0]));
-    var MovieYear=release_date.slice(0,4);
-        let languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
-        var movieLang = languageNames.of(original_language);
-        
+function displayMoviesCa(movies) {
+  const carousel = document.querySelector("#movies-carousel");
+  var carouselItem = "";
 
-    const carousel=document.querySelector('.carousel-inner');
-    var carouselItem = "";
-    var ratings=vote_average/2;
-    carouselItem += `<div class="carousel-item active" data-bs-interval="10000" onclick=showMovie("${0}")>
-
-        <img src="${IMG_URL + backdrop_path}" alt="${title}"/>
-        
-        
-        <div class='movie-info'>
-            <div class="ratings">
-                <div class="Stars" style="--rating:${ratings};">
-            
-                <h3>${vote_average}</h3>
-                </div>
-            </div>
-            <h3>${title}</h3>
-            <h3>${MovieYear}</h3>
-            <h3>${movieLang}</h3>
-        </div>
-        
-        </div>`;
-    
-
-    movies.slice(1,3).forEach((movie, index)=>{
-
+  movies.forEach((movie, index) => {
     console.log(index);
-        
-    const {backdrop_path,release_date,title,vote_average,original_language, id}=movie;
-    // sessionStorage.setItem("movie",JSON.stringify(movie));
 
-    var MovieYear=release_date.slice(0,4);
-        let languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
-        var movieLang = languageNames.of(original_language);
-        
+    const {
+      backdrop_path,
+      release_date,
+      title,
+      vote_average,
+      original_language,
+      id,
+    } = movie;
 
-        carouselItem += `<div class="carousel-item " data-bs-interval="10000" onclick=showMovie("${index}")>
+    var ratings = vote_average / 2;
+
+    var MovieYear = release_date.slice(0, 4);
+    let languageNames = new Intl.DisplayNames(["en"], { type: "language" });
+    var movieLang = languageNames.of(original_language);
+
+    carouselItem += `<div onclick=showMovie("${0}")>
+
+    <img src="${IMG_URL + backdrop_path}" alt="${title}"/>
     
-        <img src="${IMG_URL + backdrop_path}" alt="${title}"/>
-        <div class='movie-info'>
-        <div class="Stars" style="--rating:${ratings};">
-        </div>
-        <h3>${title}</h3>
+    
+    <div class='carousel-content'>
+        <div class="ratings">
+            
+            <div class="Stars" style="--rating:${ratings}">
         
-        <h3>${vote_average}</h3>
-        <h3>${MovieYear}</h3>
-        <h3>${movieLang}</h3>
+            <div><h3 style="color: white;" class="rating_text">${"("+ratings+"/5)"}</h3></div>
+            </div>
         </div>
-             
-                
-        </div>`;
-     
+        <h3 style="margin-top:-50px;font-size:18px;color: white;">${title}( ${MovieYear} | ${movieLang} )</h3>
         
-        //carouselcaption.appendChild(moviesElement11);
-    })
-        carousel.innerHTML=carouselItem;
-
+    </div>
+    
+    </div>`;
+  });
+  carousel.innerHTML = carouselItem;
+  handleCarousel(".owl-carousel");
 }
 
 function displayMovies(movies) {
-    var cardContainer = document.getElementById("main");
-    var card = "";
-    movies.forEach((movie, index)=>{
-        
-        const {poster_path,release_date,title,vote_average,original_language,id}=movie
-        var MovieYear=release_date.slice(0,4);
-        let languageNames = new Intl.DisplayNames(['en'], {type: 'language'});
-        var movieLang = languageNames.of(original_language);
-        
-        
-    
-        card += `
+  var cardContainer = document.getElementById("main");
+  var card = "";
+  
+  
+  movies.forEach((movie, index) => {
+    const {
+      poster_path,
+      release_date,
+      title,
+      vote_average,
+      original_language,
+      id,
+    } = movie;
+    var MovieYear = release_date.slice(0, 4);
+    let languageNames = new Intl.DisplayNames(["en"], { type: "language" });
+    var movieLang = languageNames.of(original_language);
+    var ratings = vote_average / 2;
+
+    card += `
         <div class="card col-lg-4 col-md-6 col-sm-12" onclick=showMovie(${index})>
             <img src="${IMG_URL + poster_path}" alt="${title}"/>
 
             <div class='movie-info'>
+
             
-            <h3>${title}</h3>
-            <h3>${vote_average}</h3>
+            <h3 class="Movie_name_card">${title}</h3>
+            <div class="Card_ratings">
+            <div class="Stars" style="--rating:${ratings};">
+        
+            <div><h3 class="rating_text">${"("+ratings+"/5)"}</h3></div>
+            </div>
+        </div>
             
-            <h3>${movieLang}</h3>
-            <h3>${MovieYear}</h3>
+            
+            <h3 class="Card_lang">${movieLang}<br>${MovieYear}</h3>
             </div>
         </div>`;
-    });
-    //console.log(card);
-    cardContainer.innerHTML = card;
+  });
+  //console.log(card);
+  cardContainer.innerHTML = card;
 }
 
+const handleCarousel = (carouselName) => {
+  $(carouselName).owlCarousel({
+    loop: true,
+    margin: 10,
+    autoplay: true,
+    autoplayTimeout: 5000,
+    responsiveClass: true,
+    responsive: {
+      0: {
+        items: 1,
+        nav: true,
+      },
+      520: {
+        items: 2,
+        nav: false,
+      },
+      768: {
+        items: 3,
+        nav: true,
+        loop: false,
+      },
+    },
+  });
+};
